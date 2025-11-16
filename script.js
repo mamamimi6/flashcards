@@ -25,11 +25,8 @@ function stopTimer() {
 }
 
 function toggleTimer() {
-    if (timerRunning) {
-        stopTimer();
-    } else {
-        startTimer();
-    }
+    if (timerRunning) stopTimer();
+    else startTimer();
 }
 
 function resetTimer() {
@@ -81,7 +78,12 @@ function randomProblem() {
 let current = null;
 let lastQuestion = null;
 
+
 function nextCard() {
+
+    // ★★★ Safari（iPad/iPhone）で音を出すために絶対必要
+    getAudioContext().resume();
+
     if (!timerRunning) startTimer();
 
     let p;
@@ -162,7 +164,6 @@ function checkAnswer() {
         fb.className = "ok";
         playBeep('ok');
 
-        // 0.8秒後に次の問題
         setTimeout(() => {
             nextCard();
         }, 800);
@@ -172,7 +173,6 @@ function checkAnswer() {
         fb.className = "ng";
         playBeep('ng');
 
-        // 1.4秒後に次の問題
         setTimeout(() => {
             nextCard();
         }, 1400);
