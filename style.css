@@ -1,0 +1,44 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background: #f0f7ff;
+}
+
+h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+#card {
+    font-size: 2.4rem;
+    margin: 35px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+button {
+    padding: 12px 20px;
+    margin: 6px;
+    font-size: 1.3rem;
+    border-radius: 10px;
+    border: none;
+    background: #007bff;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#timer {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    display: none;
+}
+
+.buttons {
+    margin: 10px 0;
+}
