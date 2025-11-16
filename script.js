@@ -38,15 +38,15 @@ function resetTimer() {
     stopTimer();
 }
 
-// 最初に表示だけ整える
+// 初期表示
 updateTimer();
+
 
 // ===== 問題生成 =====
 function randomInt(min, max) {
     return min + Math.floor(Math.random() * (max - min + 1));
 }
 
-// 11〜19, 2桁×1桁, 2桁×2桁, 割り算（割り切れるやつ）
 function randomProblem() {
     const t = Math.floor(Math.random() * 4);
 
@@ -71,7 +71,7 @@ function randomProblem() {
         return { q: `${a} × ${b}`, a: a * b };
     }
 
-    // ④ 割り算（割り切れるようにする）
+    // ④ 割り算（割り切れる）
     let b = randomInt(1, 9);
     let x = randomInt(2, 20);
     let a = b * x;
@@ -82,13 +82,12 @@ let current = null;
 let lastQuestion = null;
 
 function nextCard() {
-    // タイマーが動いてなければスタート
     if (!timerRunning) startTimer();
 
     let p;
     do {
         p = randomProblem();
-    } while (lastQuestion && p.q === lastQuestion); // 直前と同じ問題は避ける
+    } while (lastQuestion && p.q === lastQuestion);
 
     lastQuestion = p.q;
     current = p;
@@ -100,8 +99,10 @@ function nextCard() {
     document.getElementById("answerInput").focus();
 }
 
-// ===== ピンポン／ブー音 =====
+
+// ===== ピンポン / ブー音 =====
 let audioCtx = null;
+
 function getAudioContext() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -110,7 +111,6 @@ function getAudioContext() {
 }
 
 function playBeep(type) {
-    // type: 'ok' or 'ng'
     const ctx = getAudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -119,9 +119,9 @@ function playBeep(type) {
     gain.connect(ctx.destination);
 
     if (type === 'ok') {
-        osc.frequency.value = 880; // 高め
+        osc.frequency.value = 880;
     } else {
-        osc.frequency.value = 220; // 低め
+        osc.frequency.value = 220;
     }
 
     osc.type = "sine";
@@ -134,6 +134,7 @@ function playBeep(type) {
     osc.start(now);
     osc.stop(now + 0.4);
 }
+
 
 // ===== 答えチェック =====
 function checkAnswer() {
@@ -160,9 +161,20 @@ function checkAnswer() {
         fb.innerText = "ピンポーン！ 正解！";
         fb.className = "ok";
         playBeep('ok');
+
+        // 0.8秒後に次の問題
+        setTimeout(() => {
+            nextCard();
+        }, 800);
+
     } else {
         fb.innerText = `ブー！ 正解は ${correct} だよ`;
         fb.className = "ng";
         playBeep('ng');
+
+        // 1.4秒後に次の問題
+        setTimeout(() => {
+            nextCard();
+        }, 1400);
     }
 }
