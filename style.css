@@ -1,32 +1,45 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     text-align: center;
-    padding: 20px;
+    padding: 24px;
     background: #f0f7ff;
+    font-size: 18px; /* 全体ベースを少し大きく */
 }
 
 h2 {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
+    font-size: 2.2rem;
+    margin-bottom: 24px;
 }
 
 #card {
-    font-size: 2.4rem;
-    margin: 35px 0;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
+    font-size: 3.4rem; /* 約1.5倍 */
+    margin: 30px 0;
+    padding: 22px;
+    background: #ffffff;
+    border-radius: 14px;
     display: inline-block;
+    min-width: 260px;
+}
+
+#answer-area {
+    margin: 12px 0;
+}
+
+#answerInput {
+    font-size: 1.6rem;
+    padding: 8px 10px;
+    width: 160px;
+    text-align: center;
 }
 
 button {
-    padding: 12px 20px;
+    padding: 12px 22px;
     margin: 6px;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     border-radius: 10px;
     border: none;
     background: #007bff;
-    color: white;
+    color: #ffffff;
 }
 
 button:hover {
@@ -34,11 +47,22 @@ button:hover {
 }
 
 #timer {
-    font-size: 1.8rem;
+    font-size: 2.0rem;
     margin-bottom: 10px;
-    display: none;
 }
 
 .buttons {
     margin: 10px 0;
+}
+
+#feedback {
+    font-size: 1.7rem;
+    margin-top: 6px;
+    min-height: 2em;
+}
+#feedback.ok {
+    color: #008000;
+}
+#feedback.ng {
+    color: #cc0000;
 }
