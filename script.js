@@ -1,5 +1,4 @@
-// ------------------ Timer ------------------
-let timerVisible = false;
+// ===== タイマー =====
 let timerRunning = false;
 let elapsed = 0;
 let intervalId = null;
@@ -9,13 +8,6 @@ function updateTimer() {
     let m = String(Math.floor(sec / 60)).padStart(2, '0');
     let s = String(sec % 60).padStart(2, '0');
     document.getElementById("timer").innerText = `${m}:${s}`;
-}
-
-function toggleTimer() {
-    timerVisible = !timerVisible;
-    document.getElementById("timer").style.display = timerVisible ? "block" : "none";
-    if (timerVisible && !timerRunning) startTimer();
-    if (!timerVisible) stopTimer();
 }
 
 function startTimer() {
@@ -32,64 +24,145 @@ function stopTimer() {
     clearInterval(intervalId);
 }
 
+function toggleTimer() {
+    if (timerRunning) {
+        stopTimer();
+    } else {
+        startTimer();
+    }
+}
+
 function resetTimer() {
     elapsed = 0;
     updateTimer();
+    stopTimer();
 }
 
-// ------------------ Problems ------------------
-function isPrime(n) {
-    if (n < 2) return false;
-    for (let i = 2; i * i <= n; i++) {
-        if (n % i === 0) return false;
-    }
-    return true;
+// 最初に表示だけ整える
+updateTimer();
+
+// ===== 問題生成 =====
+function randomInt(min, max) {
+    return min + Math.floor(Math.random() * (max - min + 1));
 }
 
+// 11〜19, 2桁×1桁, 2桁×2桁, 割り算（割り切れるやつ）
 function randomProblem() {
-    const t = Math.floor(Math.random() * 5);
+    const t = Math.floor(Math.random() * 4);
 
     // ① 11〜19 × 11〜19
     if (t === 0) {
-        let a = 11 + Math.floor(Math.random() * 9);
-        let b = 11 + Math.floor(Math.random() * 9);
-        return {q: `${a} × ${b}`, a: a * b};
+        let a = randomInt(11, 19);
+        let b = randomInt(11, 19);
+        return { q: `${a} × ${b}`, a: a * b };
     }
 
-    // ② 素数
+    // ② 2桁 × 1桁
     if (t === 1) {
-        let n = 2 + Math.floor(Math.random() * 99);
-        return {q: `${n} は素数？`, a: isPrime(n) ? "YES" : "NO"};
+        let a = randomInt(10, 99);
+        let b = randomInt(1, 9);
+        return { q: `${a} × ${b}`, a: a * b };
     }
 
-    // ③ 2桁 × 1桁
+    // ③ 2桁 × 2桁
     if (t === 2) {
-        let a = 10 + Math.floor(Math.random() * 90);
-        let b = 1 + Math.floor(Math.random() * 9);
-        return {q: `${a} × ${b}`, a: a * b};
+        let a = randomInt(10, 99);
+        let b = randomInt(10, 99);
+        return { q: `${a} × ${b}`, a: a * b };
     }
 
-    // ④ 2桁 × 2桁
-    if (t === 3) {
-        let a = 10 + Math.floor(Math.random() * 90);
-        let b = 10 + Math.floor(Math.random() * 90);
-        return {q: `${a} × ${b}`, a: a * b};
-    }
-
-    // ⑤ 割り算
-    let b = 1 + Math.floor(Math.random() * 9);
-    let a = b * (2 + Math.floor(Math.random() * 20));
-    return {q: `${a} ÷ ${b}`, a: a / b};
+    // ④ 割り算（割り切れるようにする）
+    let b = randomInt(1, 9);
+    let x = randomInt(2, 20);
+    let a = b * x;
+    return { q: `${a} ÷ ${b}`, a: x };
 }
 
 let current = null;
+let lastQuestion = null;
 
 function nextCard() {
-    current = randomProblem();
+    // タイマーが動いてなければスタート
+    if (!timerRunning) startTimer();
+
+    let p;
+    do {
+        p = randomProblem();
+    } while (lastQuestion && p.q === lastQuestion); // 直前と同じ問題は避ける
+
+    lastQuestion = p.q;
+    current = p;
+
     document.getElementById("card").innerText = current.q;
+    document.getElementById("answerInput").value = "";
+    document.getElementById("feedback").innerText = "";
+    document.getElementById("feedback").className = "";
+    document.getElementById("answerInput").focus();
 }
 
-function showAnswer() {
-    if (current)
-        document.getElementById("card").innerText = current.a;
+// ===== ピンポン／ブー音 =====
+let audioCtx = null;
+function getAudioContext() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    return audioCtx;
+}
+
+function playBeep(type) {
+    // type: 'ok' or 'ng'
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'ok') {
+        osc.frequency.value = 880; // 高め
+    } else {
+        osc.frequency.value = 220; // 低め
+    }
+
+    osc.type = "sine";
+    const now = ctx.currentTime;
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.4, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+
+    osc.start(now);
+    osc.stop(now + 0.4);
+}
+
+// ===== 答えチェック =====
+function checkAnswer() {
+    const inputEl = document.getElementById("answerInput");
+    const fb = document.getElementById("feedback");
+
+    if (!current) {
+        fb.innerText = "まず「次の問題」を押してね";
+        fb.className = "ng";
+        return;
+    }
+
+    const user = inputEl.value.trim();
+    if (user === "") {
+        fb.innerText = "答えを入力してね";
+        fb.className = "ng";
+        return;
+    }
+
+    const userNum = Number(user);
+    const correct = Number(current.a);
+
+    if (userNum === correct) {
+        fb.innerText = "ピンポーン！ 正解！";
+        fb.className = "ok";
+        playBeep('ok');
+    } else {
+        fb.innerText = `ブー！ 正解は ${correct} だよ`;
+        fb.className = "ng";
+        playBeep('ng');
+    }
 }
