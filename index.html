@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Haruta Flashcards</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Haruta Flashcards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>はるたのフラッシュカード</h2>
+  <h2>はるたのフラッシュカード</h2>
 
-<div id="timer">00:00</div>
-<div id="card">「次の問題」で開始</div>
+  <div id="timer">00:00</div>
 
-<div class="buttons">
-  <button onclick="showAnswer()">答え</button>
-  <button onclick="nextCard()">次の問題</button>
-</div>
+  <div id="card">「次の問題」でスタート</div>
 
-<div class="buttons">
-  <button onclick="toggleTimer()">タイマー ON/OFF</button>
-  <button onclick="resetTimer()">リセット</button>
-</div>
+  <div id="answer-area">
+    <input id="answerInput" type="number" inputmode="numeric" placeholder="答えを入力" />
+    <button onclick="checkAnswer()">答え合わせ</button>
+  </div>
 
-<script src="script.js"></script>
+  <div id="feedback"></div>
+
+  <div class="buttons">
+    <button onclick="nextCard()">次の問題</button>
+  </div>
+
+  <div class="buttons">
+    <button onclick="toggleTimer()">タイマー ON / OFF</button>
+    <button onclick="resetTimer()">リセット</button>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
