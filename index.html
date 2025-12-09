@@ -10,6 +10,13 @@
 
   <h2>はるたのフラッシュカード</h2>
 
+  <div class="mode-switch">
+    <button id="calcMode" class="mode-btn active" onclick="switchMode('calc')">計算練習</button>
+    <button id="primeMode" class="mode-btn" onclick="switchMode('prime')">素数倍数暗記</button>
+    <button id="danMode" class="mode-btn" onclick="switchMode('dan')">2～9の段</button>
+    <button id="teenMode" class="mode-btn" onclick="switchMode('teen')">11～19の段</button>
+  </div>
+
   <div id="timer">00:00</div>
 
   <div id="card">「次の問題」でスタート</div>
